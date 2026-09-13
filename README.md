@@ -1,36 +1,50 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# BookFinder
 
-## Getting Started
+가입 없이 Open Library로 전 세계 원서를 검색하는 웹앱입니다. Google 로그인은 책을 찜할 때만 필요합니다.
 
-First, run the development server:
+## 로컬 실행
 
 ```bash
+npm install
+cp .env.example .env.local
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+[http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 환경 변수
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| 변수 | 설명 |
+| --- | --- |
+| `NEXT_PUBLIC_SITE_URL` | 배포 URL |
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase 프로젝트 URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anon public key |
+| `NEXT_PUBLIC_ADSENSE_CLIENT` | `ca-pub-...` |
+| `NEXT_PUBLIC_ADSENSE_SLOT_BANNER` | 띠 배너 슬롯 (승인 후) |
+| `NEXT_PUBLIC_ADSENSE_SLOT_INLINE` | 검색 인라인 슬롯 |
+| `NEXT_PUBLIC_ADSENSE_SLOT_DETAIL` | 상세 하단 슬롯 |
+| `NEXT_PUBLIC_AMAZON_ASSOCIATE_TAG` | 만 18세 이후 Associates 가입 시 |
 
-## Learn More
+## Google 로그인 설정 (한 번만)
 
-To learn more about Next.js, take a look at the following resources:
+1. Supabase Dashboard → **SQL Editor** → `supabase/schema.sql` 전체 실행
+2. **Authentication → Providers → Google** 활성화 후 Google Client ID / Secret 붙여넣기
+3. Google Cloud Console → 해당 OAuth 클라이언트:
+   - Authorized JavaScript origins: `http://localhost:3000`, 배포 URL
+   - Authorized redirect URIs: `https://<project-ref>.supabase.co/auth/v1/callback`
+4. Supabase **Authentication → URL Configuration**
+   - Site URL: 배포 URL (로컬은 `http://localhost:3000`)
+   - Redirect URLs: `http://localhost:3000/auth/callback`, `https://your-domain/auth/callback`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 배포 (Vercel)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+GitHub 레포를 Vercel Import 한 뒤, 위 환경 변수를 Production에 등록합니다. `SUPABASE_SERVICE_ROLE_KEY` 와 Google Client Secret은 Vercel/Next 앱에 넣지 마세요. Secret은 Supabase Google provider에만 넣습니다.
 
-## Deploy on Vercel
+## 페이지
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `/` 검색 + 주제 카드
+- `/search` 결과 + 인라인 광고 자리
+- `/book/OL…W` 상세, Amazon 가격 확인, 찜
+- `/login` Google 로그인
+- `/library` 내 서재
+- `/about` 출처 안내
