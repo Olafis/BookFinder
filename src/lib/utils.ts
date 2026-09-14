@@ -3,8 +3,28 @@ export function extractWorkId(key: string): string {
   return parts[parts.length - 1] ?? key;
 }
 
-export function isWorkId(value: string): boolean {
+export function catalogBookId(book: { key: string; catalogId?: string }): string {
+  return book.catalogId || extractWorkId(book.key);
+}
+
+export function bookHref(workId: string): string {
+  return `/book/${encodeURIComponent(workId)}`;
+}
+
+export function isOpenLibraryWorkId(value: string): boolean {
   return /^OL\d+[Ww]$/.test(value);
+}
+
+export function isGoogleBooksId(value: string): boolean {
+  return /^gb-[^/]+$/.test(decodeURIComponent(value));
+}
+
+export function isWorkId(value: string): boolean {
+  return isOpenLibraryWorkId(value) || isGoogleBooksId(value);
+}
+
+export function hasHangul(value: string): boolean {
+  return /[\uAC00-\uD7A3]/.test(value);
 }
 
 export function pickIsbn(isbns?: string[]): string | undefined {

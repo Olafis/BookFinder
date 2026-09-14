@@ -8,7 +8,7 @@ import { BookCover } from "@/components/BookCover";
 import { BookJsonLd } from "@/components/BookJsonLd";
 import { RelatedBooks } from "@/components/RelatedBooks";
 import { getBookDetail, getRelatedBooks } from "@/lib/book-detail";
-import { OpenLibraryError, openLibraryWorkUrl } from "@/lib/openlibrary";
+import { OpenLibraryError } from "@/lib/openlibrary";
 import { excerpt, formatAuthors, isWorkId } from "@/lib/utils";
 
 type BookPageProps = {
@@ -20,7 +20,8 @@ export const revalidate = 86400;
 export async function generateMetadata({
   params,
 }: BookPageProps): Promise<Metadata> {
-  const { workId } = await params;
+  const { workId: rawWorkId } = await params;
+  const workId = decodeURIComponent(rawWorkId);
   if (!isWorkId(workId)) {
     return { title: "Book not found" };
   }
@@ -45,7 +46,8 @@ export async function generateMetadata({
 }
 
 export default async function BookPage({ params }: BookPageProps) {
-  const { workId } = await params;
+  const { workId: rawWorkId } = await params;
+  const workId = decodeURIComponent(rawWorkId);
   if (!isWorkId(workId)) notFound();
 
   let book;
@@ -74,6 +76,7 @@ export default async function BookPage({ params }: BookPageProps) {
       <div className="grid items-start gap-8 lg:grid-cols-[240px_minmax(0,1fr)_260px]">
         <BookCover
           coverId={book.coverId}
+          imageUrl={book.coverUrl}
           title={book.title}
           size="L"
           priority
@@ -82,7 +85,7 @@ export default async function BookPage({ params }: BookPageProps) {
 
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-ink-muted">
-            Open Library work
+            {book.sourceLabel ?? "Catalog"}
           </p>
           <h1 className="mt-2 font-serif text-4xl leading-tight text-ink sm:text-5xl">
             {book.title}
@@ -94,6 +97,7 @@ export default async function BookPage({ params }: BookPageProps) {
               title={book.title}
               author={formatAuthors(book.authors)}
               coverId={book.coverId}
+              coverUrl={book.coverUrl}
               firstPublishYear={book.firstPublishYear}
             />
           </div>
@@ -161,17 +165,19 @@ export default async function BookPage({ params }: BookPageProps) {
             </p>
           )}
 
-          <p className="mt-6 text-xs text-ink-muted">
-            Record on{" "}
-            <a
-              href={openLibraryWorkUrl(book.workId)}
-              className="underline decoration-line underline-offset-4 hover:text-forest"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Open Library
-            </a>
-          </p>
+          {book.sourceUrl ? (
+            <p className="mt-6 text-xs text-ink-muted">
+              Record on{" "}
+              <a
+                href={book.sourceUrl}
+                className="underline decoration-line underline-offset-4 hover:text-forest"
+                target="_blank"
+                rel="noreferrer"
+              >
+                {book.sourceLabel ?? "source"}
+              </a>
+            </p>
+          ) : null}
         </div>
 
         <aside className="hidden lg:sticky lg:top-24 lg:block">
@@ -182,6 +188,7 @@ export default async function BookPage({ params }: BookPageProps) {
               title={book.title}
               author={formatAuthors(book.authors)}
               coverId={book.coverId}
+              coverUrl={book.coverUrl}
               firstPublishYear={book.firstPublishYear}
             />
           </div>

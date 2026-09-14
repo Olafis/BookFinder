@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { SearchDoc } from "@/lib/types";
-import { extractWorkId, formatAuthors } from "@/lib/utils";
+import { bookHref, catalogBookId, formatAuthors } from "@/lib/utils";
 import { BookCover } from "./BookCover";
 
 type BookCardProps = {
@@ -8,16 +8,17 @@ type BookCardProps = {
 };
 
 export function BookCard({ book }: BookCardProps) {
-  const workId = extractWorkId(book.key);
+  const workId = catalogBookId(book);
   const authors = formatAuthors(book.author_name);
 
   return (
     <Link
-      href={`/book/${workId}`}
+      href={bookHref(workId)}
       className="group flex flex-col overflow-hidden rounded-2xl border border-line bg-paper-elevated shadow-[0_1px_0_rgba(28,25,23,0.04)] transition hover:-translate-y-0.5 hover:border-forest/25 hover:shadow-[0_12px_30px_rgba(35,64,55,0.08)]"
     >
       <BookCover
         coverId={book.cover_i}
+        imageUrl={book.cover_url}
         title={book.title}
         className="aspect-[2/3] w-full"
       />

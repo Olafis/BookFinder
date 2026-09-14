@@ -1,9 +1,11 @@
 export type SearchDoc = {
   key: string;
+  catalogId?: string;
   title: string;
   author_name?: string[];
   first_publish_year?: number;
   cover_i?: number;
+  cover_url?: string;
   isbn?: string[];
   publisher?: string[];
   number_of_pages_median?: number;
@@ -32,11 +34,14 @@ export type BookDetail = {
   description: string;
   authors: string[];
   coverId?: number;
+  coverUrl?: string;
   subjects: string[];
   publishers: string[];
   pageCount?: number;
   firstPublishYear?: number;
   isbn?: string;
+  sourceLabel?: string;
+  sourceUrl?: string;
 };
 
 export type SearchQuery = {

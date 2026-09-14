@@ -1,7 +1,8 @@
 import { redirect } from "next/navigation";
 import { BookCover } from "@/components/BookCover";
 import { createServerSupabase } from "@/lib/supabase/server";
-import type { FavoriteRecord } from "@/lib/favorites";
+import { shelfErrorMessage, type FavoriteRecord } from "@/lib/favorites";
+import { bookHref } from "@/lib/utils";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
@@ -35,8 +36,15 @@ export default async function LibraryPage() {
 
       {error ? (
         <p className="mt-8 rounded-2xl border border-line bg-paper-elevated px-5 py-4 text-sm text-ink-muted">
-          The shelf table is not ready yet. Run <code>supabase/schema.sql</code> in the
-          Supabase SQL Editor, then refresh.
+          {shelfErrorMessage(error)}{" "}
+          <a
+            href="https://supabase.com/dashboard/project/nwcuphpowzgylrzrftaf/sql/new"
+            className="underline decoration-line underline-offset-4 hover:text-forest"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Open the SQL Editor
+          </a>
         </p>
       ) : null}
 
@@ -60,11 +68,12 @@ export default async function LibraryPage() {
           {books.map((book) => (
             <li key={book.work_id}>
               <Link
-                href={`/book/${book.work_id}`}
+                href={bookHref(book.work_id)}
                 className="group flex flex-col overflow-hidden rounded-2xl border border-line bg-paper-elevated"
               >
                 <BookCover
                   coverId={book.cover_id ?? undefined}
+                  imageUrl={book.cover_url ?? undefined}
                   title={book.title}
                   className="aspect-[2/3] w-full"
                 />

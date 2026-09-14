@@ -1,8 +1,17 @@
 import { cache } from "react";
+import { searchCatalogSources } from "./catalog";
 import { OPEN_LIBRARY_ORIGIN, RELATED_LIMIT } from "./constants";
+import { getGoogleBookDetail } from "./google-books";
 import { fetchJson, searchBooks } from "./openlibrary";
 import type { BookDetail, SearchDoc, WorkRecord } from "./types";
-import { extractWorkId, normalizeDescription, pickIsbn } from "./utils";
+import {
+  catalogBookId,
+  extractWorkId,
+  hasHangul,
+  isGoogleBooksId,
+  normalizeDescription,
+  pickIsbn,
+} from "./utils";
 
 async function fetchWork(workId: string): Promise<WorkRecord> {
   return fetchJson<WorkRecord>(`${OPEN_LIBRARY_ORIGIN}/works/${workId}.json`);
@@ -34,15 +43,36 @@ function toBookDetail(
     pageCount: search?.number_of_pages_median,
     firstPublishYear: search?.first_publish_year,
     isbn: pickIsbn(search?.isbn),
+    coverUrl: search?.cover_url,
+    sourceLabel: "Open Library",
+    sourceUrl: `${OPEN_LIBRARY_ORIGIN}/works/${workId}`,
   };
 }
 
 export const getBookDetail = cache(async (workId: string): Promise<BookDetail> => {
-  const [work, search] = await Promise.all([
-    fetchWork(workId),
-    fetchWorkSearch(workId).catch(() => undefined),
-  ]);
-  return toBookDetail(workId, work, search);
+  if (isGoogleBooksId(workId)) {
+    return getGoogleBookDetail(workId);
+  }
+
+  const search = await fetchWorkSearch(workId).catch(() => undefined);
+  try {
+    const work = await fetchWork(workId);
+    return toBookDetail(workId, work, search);
+  } catch (error) {
+    if (search?.title) {
+      return toBookDetail(
+        workId,
+        {
+          key: `/works/${workId}`,
+          title: search.title,
+          covers: search.cover_i ? [search.cover_i] : undefined,
+          subjects: search.subject,
+        },
+        search,
+      );
+    }
+    throw error;
+  }
 });
 
 export async function getRelatedBooks(
@@ -51,12 +81,17 @@ export async function getRelatedBooks(
 ): Promise<SearchDoc[]> {
   if (!subject) return [];
 
-  const data = await searchBooks(
-    { subject, limit: RELATED_LIMIT, page: 1 },
+  const data = await searchCatalogSources(
+    {
+      q: hasHangul(subject) ? subject : undefined,
+      subject: hasHangul(subject) ? undefined : subject,
+      limit: RELATED_LIMIT,
+      page: 1,
+    },
     { revalidate: 86_400 },
   );
 
   return data.docs
-    .filter((doc) => extractWorkId(doc.key) !== excludeWorkId)
+    .filter((doc) => catalogBookId(doc) !== extractWorkId(excludeWorkId))
     .slice(0, 10);
 }

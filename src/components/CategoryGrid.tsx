@@ -3,6 +3,12 @@ import Link from "next/link";
 import { CATEGORIES } from "@/lib/constants";
 
 const ICONS: Record<string, ReactNode> = {
+  korean: (
+    <>
+      <path d="M5 6.5c2-.9 4-.7 6 .5 2-1.2 4-1.4 6-.5v11c-2-.8-4-.6-6 .6-2-1.2-4-1.4-6-.6v-11Z" />
+      <path d="M9 10h6M9 13h4" />
+    </>
+  ),
   fiction: (
     <path d="M5 6.5c2-.9 4-.7 6 .5 2-1.2 4-1.4 6-.5v11c-2-.8-4-.6-6 .6-2-1.2-4-1.4-6-.6v-11Z" />
   ),

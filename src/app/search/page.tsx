@@ -13,7 +13,7 @@ export async function generateMetadata({
   if (q) {
     return {
       title: `“${q}” books`,
-      description: `Search Open Library for “${q}” — titles, authors, and ISBNs from around the world.`,
+    description: `Search Google Books and Open Library for “${q}”.`,
     };
   }
   if (subject) {
@@ -21,7 +21,7 @@ export async function generateMetadata({
     const label = known?.label ?? subject;
     return {
       title: `${label} books`,
-      description: `Browse ${label} titles from Open Library. Cover, author, and first published year at a glance.`,
+      description: `Browse ${label} titles from Google Books and Open Library.`,
     };
   }
   return {

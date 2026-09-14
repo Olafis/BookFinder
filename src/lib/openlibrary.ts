@@ -21,11 +21,12 @@ export class OpenLibraryError extends Error {
 type FetchOptions = {
   signal?: AbortSignal;
   revalidate?: number | false;
+  timeoutMs?: number;
 };
 
 async function fetchJson<T>(url: string, options: FetchOptions = {}): Promise<T> {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 12_000);
+  const timeout = setTimeout(() => controller.abort(), options.timeoutMs ?? 12_000);
   const onAbort = () => controller.abort();
   options.signal?.addEventListener("abort", onAbort);
 
@@ -34,7 +35,8 @@ async function fetchJson<T>(url: string, options: FetchOptions = {}): Promise<T>
       Accept: "application/json",
     };
     if (typeof window === "undefined") {
-      headers["User-Agent"] = "BookFinder/1.0 (global book search; Vercel)";
+      headers["User-Agent"] =
+        "BookFinder/1.0 (+https://github.com/Olafis/BookFinder)";
     }
 
     const init: RequestInit & { next?: { revalidate: number } } = {

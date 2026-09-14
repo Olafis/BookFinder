@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { SEARCH_PAGE_SIZE } from "@/lib/constants";
-import { isAbortError, searchBooks } from "@/lib/openlibrary";
+import { searchCatalog } from "@/lib/catalog";
+import { isAbortError } from "@/lib/openlibrary";
 import type { SearchDoc } from "@/lib/types";
 import { formatNumber } from "@/lib/utils";
 import { AdSlot } from "./AdSlot";
@@ -22,7 +23,7 @@ export function SearchResults({ q, subject }: SearchResultsProps) {
       <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
         <h1 className="font-serif text-4xl text-ink">Browse by subject</h1>
         <p className="mt-2 mb-8 text-ink-muted">
-          Pick a category, or search by title, author, or ISBN.
+          주제 카드를 고르거나, 제목·저자·ISBN으로 검색하세요.
         </p>
         <CategoryGrid />
       </div>
@@ -42,7 +43,7 @@ function SearchResultsList({ q, subject }: { q: string; subject: string }) {
   useEffect(() => {
     const controller = new AbortController();
 
-    searchBooks(
+    searchCatalog(
       { q: q || undefined, subject: subject || undefined, page: 1 },
       { signal: controller.signal, revalidate: false },
     )
@@ -65,7 +66,7 @@ function SearchResultsList({ q, subject }: { q: string; subject: string }) {
     setLoadingMore(true);
     try {
       const nextPage = page + 1;
-      const data = await searchBooks(
+      const data = await searchCatalog(
         { q: q || undefined, subject: subject || undefined, page: nextPage },
         { revalidate: false },
       );
@@ -81,7 +82,11 @@ function SearchResultsList({ q, subject }: { q: string; subject: string }) {
     }
   }, [page, q, subject]);
 
-  const heading = q ? `Results for “${q}”` : `${capitalize(subject)} books`;
+  const heading = q
+    ? `“${q}” 검색 결과`
+    : subject === "korean"
+      ? "한국문학"
+      : `${capitalize(subject)} books`;
   const hasMore = books.length < numFound && books.length >= SEARCH_PAGE_SIZE;
 
   return (
@@ -89,11 +94,11 @@ function SearchResultsList({ q, subject }: { q: string; subject: string }) {
       <AdSlot variant="banner" className="mb-8" />
       <div className="mb-6">
         <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-ink-muted">
-          Open Library catalog
+          Google Books · Open Library
         </p>
         <h1 className="font-serif text-4xl text-ink">{heading}</h1>
         {status === "idle" && (
-          <p className="mt-2 text-sm text-ink-muted">{formatNumber(numFound)} titles</p>
+          <p className="mt-2 text-sm text-ink-muted">{formatNumber(numFound)}권</p>
         )}
       </div>
 
@@ -103,7 +108,7 @@ function SearchResultsList({ q, subject }: { q: string; subject: string }) {
           title="This search is taking a break."
           onRetry={() => {
             setStatus("loading");
-            searchBooks(
+            searchCatalog(
               { q: q || undefined, subject: subject || undefined, page: 1 },
               { revalidate: false },
             )
@@ -119,9 +124,9 @@ function SearchResultsList({ q, subject }: { q: string; subject: string }) {
       )}
       {status === "idle" && books.length === 0 && (
         <div className="rounded-3xl border border-line bg-paper-elevated px-6 py-12 text-center">
-          <p className="font-serif text-2xl text-ink">No books matched that search.</p>
+          <p className="font-serif text-2xl text-ink">검색 결과가 없습니다.</p>
           <p className="mt-2 text-sm text-ink-muted">
-            Try a shorter title, an ISBN, or a subject card.
+            짧은 제목, ISBN, 또는 주제 카드를 다시 써 보세요.
           </p>
         </div>
       )}
@@ -136,7 +141,7 @@ function SearchResultsList({ q, subject }: { q: string; subject: string }) {
                 onClick={() => void loadMore()}
                 className="rounded-full bg-forest px-6 py-3 text-sm font-medium text-paper-elevated hover:bg-forest-hover disabled:opacity-60"
               >
-                {loadingMore ? "Loading…" : "Load more"}
+                {loadingMore ? "불러오는 중…" : "더 보기"}
               </button>
             </div>
           )}

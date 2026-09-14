@@ -62,7 +62,7 @@ export function GoogleSignInButton({ nextPath = "/library" }: { nextPath?: strin
             d="M12 4.8c1.7 0 3.3.6 4.5 1.8l3.4-3.4C17.9 1.2 15.2 0 12 0 7.4 0 3.4 2.6 1.4 7l4.1 3.1C6.4 7 9 4.8 12 4.8z"
           />
         </svg>
-        {pending ? "Redirecting to Google…" : "Continue with Google"}
+        {pending ? "구글로 이동 중…" : "Google로 시작"}
       </button>
       {error ? <p className="text-center text-sm text-red-700">{error}</p> : null}
     </div>

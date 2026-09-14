@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { coverUrl } from "@/lib/openlibrary";
 
 type BookCoverProps = {
   coverId?: number;
+  imageUrl?: string;
   title: string;
   size?: "S" | "M" | "L";
   className?: string;
@@ -13,14 +14,20 @@ type BookCoverProps = {
 
 export function BookCover({
   coverId,
+  imageUrl,
   title,
   size = "M",
   className = "",
   priority = false,
 }: BookCoverProps) {
-  const [failed, setFailed] = useState(!coverId);
+  const src = imageUrl || (coverId ? coverUrl(coverId, size) : undefined);
+  const [failed, setFailed] = useState(!src);
 
-  if (failed || !coverId) {
+  useEffect(() => {
+    setFailed(!src);
+  }, [src]);
+
+  if (failed || !src) {
     return <NoImage title={title} className={className} />;
   }
 
@@ -28,7 +35,7 @@ export function BookCover({
     <div className={`relative overflow-hidden bg-forest/10 ${className}`}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src={coverUrl(coverId, size)}
+        src={src}
         alt={`Cover of ${title}`}
         className="h-full w-full object-cover"
         loading={priority ? "eager" : "lazy"}

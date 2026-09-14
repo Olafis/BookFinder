@@ -8,8 +8,8 @@ export function SiteFooter() {
         <div>
           <p className="font-serif text-2xl">{SITE_NAME}</p>
           <p className="mt-2 max-w-sm text-sm leading-6 text-paper-elevated/75">
-            A lightweight catalog for world literature. Search Open Library, then
-            buy through Amazon when a book belongs on your shelf.
+            A lightweight catalog for Korean and world literature. Search first,
+            then save books to a private shelf.
           </p>
         </div>
         <div className="text-sm">
@@ -18,8 +18,8 @@ export function SiteFooter() {
           </p>
           <ul className="mt-3 space-y-2 text-paper-elevated/85">
             <li>
-              <Link href="/search?subject=fiction" className="hover:text-paper-elevated">
-                Fiction
+              <Link href="/search?subject=korean" className="hover:text-paper-elevated">
+                한국문학
               </Link>
             </li>
             <li>
@@ -44,7 +44,7 @@ export function SiteFooter() {
             Sources
           </p>
           <p className="mt-3">
-            Book data from{" "}
+            Book data from Google Books and{" "}
             <a
               href="https://openlibrary.org"
               className="underline decoration-paper-elevated/30 underline-offset-4 hover:decoration-paper-elevated"
@@ -53,7 +53,7 @@ export function SiteFooter() {
             >
               Open Library
             </a>
-            . Covers via the Open Library Covers API.
+            .
           </p>
         </div>
       </div>

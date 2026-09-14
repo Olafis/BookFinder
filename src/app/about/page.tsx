@@ -22,6 +22,15 @@ export default function AboutPage() {
         <p>
           Bibliographic data and cover images come from{" "}
           <a
+            href="https://books.google.com"
+            className="underline decoration-line underline-offset-4 hover:text-forest"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Google Books
+          </a>{" "}
+          and{" "}
+          <a
             href="https://openlibrary.org"
             className="underline decoration-line underline-offset-4 hover:text-forest"
             target="_blank"
@@ -29,8 +38,8 @@ export default function AboutPage() {
           >
             Open Library
           </a>
-          . If the catalog is busy, you may see a short pause message — 잠시 후 다시
-          시도해 주세요.
+          . Korean-language searches use Google Books. If a catalog is busy, you
+          may see a short pause message — 잠시 후 다시 시도해 주세요.
         </p>
         <p>
           Book pages can link out to Amazon so you can check a price. Affiliate
@@ -39,7 +48,7 @@ export default function AboutPage() {
         </p>
         <p>
           Hosting is designed for Vercel’s free tier: the home page is static,
-          search runs in the browser, and book pages are cached after the first
+          search is cached for a minute, and book pages are cached after the first
           fetch.
         </p>
       </div>

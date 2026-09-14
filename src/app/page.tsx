@@ -8,15 +8,15 @@ export default function HomePage() {
       <section className="mx-auto max-w-6xl px-4 pb-8 pt-12 sm:px-6 sm:pt-20">
         <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
           <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-forest">
-            Open Library · Free · No account
+            한국어 · 원서 · 가입 없이
           </p>
           <h1 className="mt-4 font-serif text-5xl leading-[1.05] tracking-tight text-ink sm:text-6xl">
             Find any book.
             <span className="block italic text-forest">Anywhere.</span>
           </h1>
           <p className="mt-5 max-w-xl text-base leading-7 text-ink-muted sm:text-lg">
-            가입 없이 전 세계 원서를 검색하세요. Title, author, ISBN, or a subject
-            card — then open the book and check the Amazon price.
+            가입 없이 한국어 책과 원서를 검색하세요. 제목, 저자, ISBN, 또는
+            주제 카드를 고르면 됩니다.
           </p>
           <div className="mt-8 w-full">
             <SearchBar variant="hero" autoFocus />

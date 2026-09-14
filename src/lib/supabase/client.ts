@@ -1,12 +1,11 @@
 import { createBrowserClient } from "@supabase/ssr";
+import { getSupabasePublicConfig } from "./env";
 
 export function createBrowserSupabase() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-  if (!url || !anonKey) {
+  const config = getSupabasePublicConfig();
+  if (!config) {
     throw new Error("Supabase env vars are missing.");
   }
 
-  return createBrowserClient(url, anonKey);
+  return createBrowserClient(config.url, config.anonKey);
 }

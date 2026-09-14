@@ -5,7 +5,9 @@ import Link from "next/link";
 import { createBrowserSupabase } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
 
-const supabaseEnabled = Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL);
+import { getSupabasePublicConfig } from "@/lib/supabase/env";
+
+const supabaseEnabled = Boolean(getSupabasePublicConfig());
 
 export function AuthControls() {
   const [user, setUser] = useState<User | null | undefined>(
@@ -37,7 +39,7 @@ export function AuthControls() {
         href="/login"
         className="rounded-full bg-forest px-3 py-1.5 text-xs font-medium text-paper-elevated hover:bg-forest-hover"
       >
-        Sign in
+        로그인
       </Link>
     );
   }

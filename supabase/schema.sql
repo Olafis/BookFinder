@@ -1,5 +1,6 @@
--- Run this in the Supabase SQL Editor once.
--- Dashboard: https://supabase.com/dashboard/project/nwcuhpowzgylrzrftaf/sql/new
+-- Run this in the SQL Editor of the SAME project Vercel uses.
+-- Dashboard: https://supabase.com/dashboard/project/nwcuphpowzgylrzrftaf/sql/new
+-- Project URL: https://nwcuphpowzgylrzrftaf.supabase.co
 
 create table if not exists public.profiles (
   id uuid primary key references auth.users (id) on delete cascade,
@@ -21,6 +22,8 @@ create table if not exists public.favorites (
 
 create index if not exists favorites_user_created_idx
   on public.favorites (user_id, created_at desc);
+
+alter table public.favorites add column if not exists cover_url text;
 
 alter table public.profiles enable row level security;
 alter table public.favorites enable row level security;
@@ -49,6 +52,9 @@ drop policy if exists "delete own favorites" on public.favorites;
 create policy "delete own favorites"
   on public.favorites for delete
   using (auth.uid() = user_id);
+
+grant select, update on table public.profiles to authenticated;
+grant select, insert, delete on table public.favorites to authenticated;
 
 create or replace function public.handle_new_user()
 returns trigger

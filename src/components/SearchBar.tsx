@@ -4,9 +4,10 @@ import { useEffect, useId, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { SEARCH_DEBOUNCE_MS, SUGGESTION_LIMIT } from "@/lib/constants";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
-import { isAbortError, searchBooks } from "@/lib/openlibrary";
+import { searchCatalog } from "@/lib/catalog";
+import { isAbortError } from "@/lib/openlibrary";
 import type { SearchDoc } from "@/lib/types";
-import { extractWorkId, formatAuthors } from "@/lib/utils";
+import { bookHref, catalogBookId, formatAuthors } from "@/lib/utils";
 
 type SearchBarProps = {
   variant?: "hero" | "compact";
@@ -35,7 +36,7 @@ export function SearchBar({
 
     const controller = new AbortController();
 
-    searchBooks(
+    searchCatalog(
       { q: debouncedQuery, limit: SUGGESTION_LIMIT, page: 1 },
       { signal: controller.signal, revalidate: false },
     )
@@ -72,7 +73,7 @@ export function SearchBar({
 
   function goToBook(book: SearchDoc) {
     setOpen(false);
-    router.push(`/book/${extractWorkId(book.key)}`);
+    router.push(bookHref(catalogBookId(book)));
   }
 
   return (
@@ -93,7 +94,7 @@ export function SearchBar({
       }}
     >
       <label htmlFor={isHero ? "hero-search" : "header-search"} className="sr-only">
-        Search by title, author, or ISBN
+        제목, 저자, ISBN으로 검색
       </label>
       <div
         className={`flex items-center gap-2 rounded-full border border-line bg-paper-elevated shadow-[0_8px_30px_rgba(35,64,55,0.06)] focus-within:border-forest/40 focus-within:ring-4 focus-within:ring-forest/10 ${
@@ -119,7 +120,7 @@ export function SearchBar({
           aria-expanded={open && suggestions.length > 0}
           aria-controls={listId}
           aria-autocomplete="list"
-          placeholder="Title, author, or ISBN"
+          placeholder="제목, 저자, ISBN"
           className={`w-full bg-transparent text-ink outline-none placeholder:text-ink-muted/70 ${
             isHero ? "text-base sm:text-lg" : "text-sm"
           }`}
@@ -150,7 +151,7 @@ export function SearchBar({
             isHero ? "px-4 py-2 text-sm sm:px-5" : "px-3 py-1.5 text-xs"
           }`}
         >
-          Search
+          검색
         </button>
       </div>
 
